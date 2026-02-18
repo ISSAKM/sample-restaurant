@@ -1,10 +1,20 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { BlogPost, GeneratedRecipeResponse } from '../types';
 
+// Ensure API key is available
+const apiKey = process.env.API_KEY;
+if (!apiKey) {
+  console.warn("API_KEY is not defined. The AI Sous Chef will not function until a key is provided in Netlify environment variables.");
+}
+
 // Initialize Gemini Client
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey: apiKey || 'MISSING_KEY' });
 
 export const generateRecipePost = async (prompt: string): Promise<Partial<BlogPost>> => {
+  if (!apiKey) {
+    throw new Error("API Key is missing. Please configure it in your Netlify deployment settings.");
+  }
+
   const modelId = "gemini-3-flash-preview";
   
   // 1. Generate the Text Content (Recipe)
